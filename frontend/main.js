@@ -1,5 +1,19 @@
-const { app, Tray, Menu, nativeImage } = require('electron');
-const { globalShortcut } = require('electron/main');
+import { app, Tray, Menu, nativeImage } from 'electron';
+import { globalShortcut, Notification } from 'electron/main';
+import { io } from "socket.io-client";
+
+
+const socket = io("http://192.168.20.54:3000");
+
+function sendDuressAlert() {
+	const alertData = {
+		user: "John Doe",
+		timestamp: new Date().toISOString(),
+		location: "Room 4",
+	};
+
+	socket.emit("duress-alert", alertData);
+}
 
 let tray
 
@@ -20,10 +34,14 @@ app.whenReady().then(() => {
 	// This is the global shortcut that will trigger the alarm
 	globalShortcut.register('Ctrl+Shift+E', () => {
 		console.log('The alarm has been activated');
+		sendDuressAlert();
 	})
-
 })
 
+socket.on("receive-alert", (data) => {
+	console.log("Alert Received:", data);
+	new Notification("Duress Alert", {
+		body: `Alert from ${data.user} at ${data.location}`,
+	});
+});
 
-
-console.log('Hello from Electron');
