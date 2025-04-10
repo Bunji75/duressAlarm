@@ -2,14 +2,24 @@
 document.getElementById("serverIPForm").addEventListener("submit", function(event) {
   event.preventDefault();
 
-  const serverIP = document.getElementById("serverIP").value;
 
+  const serverIP = document.getElementById("serverIP").value;
   document.getElementById("info").innerHTML = ` <p>${serverIP}</p>`;
+
+  updateIP(serverIP);
 })
 
-const updateIP = async () => {
-  const response = await window.versions.serverIP();
-  console.log(response);
+document.getElementById("ack").addEventListener("submit", () => {
+  acknowledgeDuressAlert();
+})
+
+// Sends the user entered IP address to the main function to be used as the server
+function updateIP(ip) {
+  console.log(`This is in the updateIP function ${ip}`);
+  window.versions.ipAddress(ip);
 }
 
-updateIP();
+function acknowledgeDuressAlert(device) {
+  console.log('Duress Alert Acknowledged in the renderer');
+  window.versions.acknowledgeDuressAlert();
+}

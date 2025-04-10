@@ -2,8 +2,9 @@ const { app, ipcMain, Tray, Menu, nativeImage, BrowserWindow } = require('electr
 const { globalShortcut, Notification } = require('electron/main');
 const io = require('socket.io-client');
 const path = require('node:path');
+const os = require('os');
 
-const socket = io("http://192.168.20.54:3000");
+let socket = io("http://192.168.20.54:3000");
 
 
 function sendDuressAlert() {
@@ -12,13 +13,24 @@ function sendDuressAlert() {
 		timestamp: new Date().toISOString(),
 		location: "Room 4",
 	};
-
+	createWindow('duressAlert.html');
 	socket.emit("duress-alert", alertData);
+}
+
+async function changeIP(event, ip) {
+	socket = io(`http://${ip}:3000`);
+	console.log(ip);
+}
+
+async function acknowledgeDuress(event, device) {
+	const devicename = os.hostname();
+	console.log(devicename);
+	console.log("We are in the main file")
 }
 
 let tray
 
-const createWindow = () => {
+const createWindow = (page) => {
 	const win = new BrowserWindow({
 		width: 800,
 		height: 600,
@@ -26,16 +38,15 @@ const createWindow = () => {
 			preload: path.join(__dirname, 'preload.js')
 		},
 	});
-	win.loadFile('index.html');
+	win.loadFile(page);
 }
 
 
 app.whenReady().then(() => {
 
 
-	ipcMain.handle('serverIP', () => 'ping')
-
-
+	ipcMain.on('set-ip', changeIP);
+	ipcMain.on('acknowledgeDuress', acknowledgeDuress)
 	// This is the icon that shows on the toolbar
 	const icon = nativeImage.createFromPath('./images/tempimage.png');
 	tray = new Tray(icon);
@@ -54,7 +65,7 @@ app.whenReady().then(() => {
 		sendDuressAlert();
 	})
 
-	createWindow();
+	createWindow('index.html');
 })
 
 app.on('window-all-closed', () => { })
