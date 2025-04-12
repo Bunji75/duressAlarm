@@ -19,6 +19,11 @@ io.on("connection", (socket) => {
 		io.emit("receive-alert", data);
 	});
 
+	socket.on("acknowledgement", (data) => {
+		console.log("Device acknowledged:", data);
+		oi.emit("receive-ack", data);
+	})
+
 	socket.on("disconnect", () => {
 		console.log("User disconnected: ", socket.id);
 	});

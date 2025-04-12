@@ -23,3 +23,7 @@ function acknowledgeDuressAlert(device) {
   console.log('Duress Alert Acknowledged in the renderer');
   window.versions.acknowledgeDuressAlert();
 }
+
+window.versions.acknowledgementReceived(() => {
+  console.log("Ack received")
+})

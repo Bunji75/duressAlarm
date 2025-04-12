@@ -22,12 +22,6 @@ async function changeIP(event, ip) {
 	console.log(ip);
 }
 
-async function acknowledgeDuress(event, device) {
-	const devicename = os.hostname();
-	console.log(devicename);
-	console.log("We are in the main file")
-}
-
 let tray
 
 const createWindow = (page) => {
@@ -38,6 +32,17 @@ const createWindow = (page) => {
 			preload: path.join(__dirname, 'preload.js')
 		},
 	});
+
+
+	async function acknowledgeDuress() {
+		const deviceName = os.hostname();
+		console.log(deviceName);
+		console.log("We are in the main file")
+		socket.emit("acknowledgement", deviceName)
+		win.webContents.send('acknowledgementReceived', deviceName)
+	}
+
+
 	win.loadFile(page);
 }
 
@@ -80,3 +85,7 @@ socket.on("receive-alert", (data) => {
 	}).show();
 });
 
+socket.on('receive-ack', (data) => {
+	console.log("Acknowledgement receieved:", data);
+	ipcMain.emit('acknowledgementReceived', acknowledgement);
+})
