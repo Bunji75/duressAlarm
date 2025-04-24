@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer, ipcMain } = require('electron');
+const { contextBridge, ipcRenderer, } = require('electron');
 
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,
@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('versions', {
   electron: () => process.versions.electron,
   ipAddress: (ip) => ipcRenderer.send('set-ip', ip),
   acknowledgeDuressAlert: () => ipcRenderer.send('acknowledgeDuress'),
-  acknowledgementReceived: () => ipcRenderer.on('acknowledgement', deviceName),
+  acknowledgementReceived: () => ipcRenderer.invoke('acknowledgement'),
   // Variables can be exposed here not just functions
 })
 
