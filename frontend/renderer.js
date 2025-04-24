@@ -19,7 +19,7 @@ function updateIP(ip) {
   window.versions.ipAddress(ip);
 }
 
-function acknowledgeDuressAlert(device) {
+function acknowledgeDuressAlert() {
   console.log('Duress Alert Acknowledged in the renderer');
   window.versions.acknowledgeDuressAlert();
 }

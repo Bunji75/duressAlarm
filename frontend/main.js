@@ -51,7 +51,7 @@ app.whenReady().then(() => {
 
 
 	ipcMain.on('set-ip', changeIP);
-	ipcMain.on('acknowledgeDuress', acknowledgeDuress)
+	//	ipcMain.on('acknowledgeDuress', acknowledgeDuress)
 	// This is the icon that shows on the toolbar
 	const icon = nativeImage.createFromPath('./images/tempimage.png');
 	tray = new Tray(icon);
