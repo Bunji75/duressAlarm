@@ -19,11 +19,12 @@ function updateIP(ip) {
   window.versions.ipAddress(ip);
 }
 
-function acknowledgeDuressAlert() {
+async function acknowledgeDuressAlert() {
   console.log('Duress Alert Acknowledged in the renderer');
-  window.versions.acknowledgeDuressAlert();
+  let event, deviceName = await window.versions.acknowledgeDuressAlert();
+  document.getElementById("acknowledgements").innerHTML += `<p>${deviceName}</p>`
 }
 
 window.versions.acknowledgementReceived(() => {
-  console.log("Ack received")
+  console.log('We have received an acknowledged from the server')
 })

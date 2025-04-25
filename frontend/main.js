@@ -4,9 +4,14 @@ const io = require('socket.io-client');
 const path = require('node:path');
 const os = require('os');
 
-let socket = io("http://192.168.20.54:3000");
+let socket = io("http://0.0.0.0:3000");
+// Helper function that sets the IP address for the application
+async function changeIP(event, ip) {
+	socket = io(`http://${ip}:3000`);
+	console.log(ip);
+}
 
-
+// Sending a duress alert to the backend server
 function sendDuressAlert() {
 	const alertData = {
 		user: "John Doe",
@@ -17,13 +22,21 @@ function sendDuressAlert() {
 	socket.emit("duress-alert", alertData);
 }
 
-async function changeIP(event, ip) {
-	socket = io(`http://${ip}:3000`);
-	console.log(ip);
+// Acknowledging a duress alert that has been sent
+function acknowledgeDuress() {
+	const deviceName = os.hostname();
+	console.log(deviceName);
+	console.log("We are in the main file")
+	socket.emit("acknowledgement", deviceName)
+	// Receive acknowledgement from the server
+	socket.on('receive-ack', (data) => {
+		console.log("Acknowledgement receieved:", data);
+	})
+	return deviceName
 }
-
 let tray
 
+// Electron boilerplate for creating a window and loading preload
 const createWindow = (page) => {
 	const win = new BrowserWindow({
 		width: 800,
@@ -33,16 +46,6 @@ const createWindow = (page) => {
 		},
 	});
 
-
-	async function acknowledgeDuress() {
-		const deviceName = os.hostname();
-		console.log(deviceName);
-		console.log("We are in the main file")
-		socket.emit("acknowledgement", deviceName)
-		win.webContents.send('acknowledgementReceived', deviceName)
-	}
-
-
 	win.loadFile(page);
 }
 
@@ -51,15 +54,17 @@ app.whenReady().then(() => {
 
 
 	ipcMain.on('set-ip', changeIP);
-	//	ipcMain.on('acknowledgeDuress', acknowledgeDuress)
+
 	// This is the icon that shows on the toolbar
 	const icon = nativeImage.createFromPath('./images/tempimage.png');
 	tray = new Tray(icon);
+
 	// This is the menu items that show when you right click the icon
 	const contextMenu = Menu.buildFromTemplate([
 		{ label: 'Quit', type: 'normal', role: 'quit' }
 	])
 	tray.setContextMenu(contextMenu);
+
 	// This is the tool tip that shows when you hover over the icon
 	tray.setToolTip('This is my duress alarm');
 	tray.setTitle('This is a title');
@@ -70,11 +75,15 @@ app.whenReady().then(() => {
 		sendDuressAlert();
 	})
 
+	ipcMain.handle('acknowledgeDuress', acknowledgeDuress);
+
 	createWindow('index.html');
 })
 
+// Setting the default behaviour of closed windows so that the application still runs
 app.on('window-all-closed', () => { })
 
+// Create notification when we receive a duress alert from the server
 socket.on("receive-alert", (data) => {
 	console.log("Alert Received:", data);
 	const NotificationTitle = "Duress Alert";
@@ -84,8 +93,3 @@ socket.on("receive-alert", (data) => {
 		body: NotificationBody
 	}).show();
 });
-
-socket.on('receive-ack', (data) => {
-	console.log("Acknowledgement receieved:", data);
-	ipcMain.emit('acknowledgementReceived', acknowledgement);
-})
