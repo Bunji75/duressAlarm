@@ -23,19 +23,17 @@ function sendDuressAlert() {
 }
 
 // Acknowledging a duress alert that has been sent
-async function acknowledgeDuress() {
+function acknowledgeDuress() {
 	const deviceName = os.hostname();
 	console.log(deviceName);
 	console.log("We are in the main file")
 	socket.emit("acknowledgement", deviceName)
+	// Receive acknowledgement from the server
+	socket.on('receive-ack', (data) => {
+		console.log("Acknowledgement receieved:", data);
+	})
+	return deviceName
 }
-
-// Receive acknowledgement from the server
-socket.on('receive-ack', (data) => {
-	console.log("Acknowledgement receieved:", data);
-	ipcMain.handle('acknowledgementReceived', acknowledgeDuress);
-})
-
 let tray
 
 // Electron boilerplate for creating a window and loading preload
@@ -76,6 +74,8 @@ app.whenReady().then(() => {
 		console.log('The alarm has been activated');
 		sendDuressAlert();
 	})
+
+	ipcMain.handle('acknowledgeDuress', acknowledgeDuress);
 
 	createWindow('index.html');
 })

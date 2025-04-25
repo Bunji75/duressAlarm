@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('versions', {
   chrome: () => process.versions.chrome,
   electron: () => process.versions.electron,
   ipAddress: (ip) => ipcRenderer.send('set-ip', ip),
-  acknowledgeDuressAlert: () => ipcRenderer.send('acknowledgeDuress'),
+  acknowledgeDuressAlert: () => ipcRenderer.invoke('acknowledgeDuress'),
   acknowledgementReceived: () => ipcRenderer.invoke('acknowledgement'),
   // Variables can be exposed here not just functions
 })
