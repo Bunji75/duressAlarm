@@ -9,6 +9,13 @@ document.getElementById("serverIPForm").addEventListener("submit", function(even
   updateIP(serverIP);
 })
 
+document.getElementById("computerNameForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  const computerName = document.getElementById("computerName").value;
+  document.getElementById("computer").innerHTML = `<p>${computerName}</p>`;
+  updateComputerName(computerName);
+})
+
 
 // Sends the user entered IP address to the main function to be used as the server
 function updateIP(ip) {
@@ -18,7 +25,8 @@ function updateIP(ip) {
 
 
 // listens for the acknowledgement to be submitted
-document.getElementById("ack").addEventListener("submit", () => {
+document.getElementById("ack").addEventListener("submit", function(event) {
+  event.preventDefault();
   acknowledgeDuressAlert();
 })
 
@@ -33,8 +41,3 @@ window.versions.acknowledgementReceived(() => {
   console.log('We have received an acknowledged from the server')
 })
 
-// listens for the acknowledgement to be submitted
-document.getElementById("computerNameForm").addEventListener("submit", () => {
-  const computerName = document.getElementById("computerName").value;
-  document.getElementById("computer").innerHTML = `<p>${computerName}</p>`;
-})
