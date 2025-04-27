@@ -16,6 +16,11 @@ document.getElementById("computerNameForm").addEventListener("submit", function(
   updateComputerName(computerName);
 })
 
+function updateComputerName(computerName) {
+  console.log(`This is the new computer name ${computerName}`);
+  window.versions.computerName(computerName);
+}
+
 
 // Sends the user entered IP address to the main function to be used as the server
 function updateIP(ip) {

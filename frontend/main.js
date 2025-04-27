@@ -5,6 +5,7 @@ const path = require('node:path');
 const os = require('os');
 
 let socket = io("http://0.0.0.0:3000");
+
 // Helper function that sets the IP address for the application
 async function changeIP(event, ip) {
 	socket = io(`http://${ip}:3000`);
@@ -16,7 +17,7 @@ function sendDuressAlert() {
 	const alertData = {
 		user: "John Doe",
 		timestamp: new Date().toISOString(),
-		location: "Room 4",
+		location: "Room",
 	};
 	createWindow('duressAlert.html');
 	socket.emit("duress-alert", alertData);
@@ -24,7 +25,7 @@ function sendDuressAlert() {
 
 // Acknowledging a duress alert that has been sent
 function acknowledgeDuress() {
-	const deviceName = os.hostname();
+	let deviceName = os.hostname();
 	console.log(deviceName);
 	console.log("We are in the main file")
 	socket.emit("acknowledgement", deviceName)
@@ -33,6 +34,9 @@ function acknowledgeDuress() {
 		console.log("Acknowledgement receieved:", data);
 	})
 	return deviceName
+}
+
+function changeComputerName(computerName) {
 }
 let tray
 
@@ -53,8 +57,10 @@ const createWindow = (page) => {
 app.whenReady().then(() => {
 
 
-	ipcMain.on('set-ip', changeIP);
 
+
+	ipcMain.on('set-ip', changeIP);
+	ipcMain.on('set-computerName', changeComputerName);
 	// This is the icon that shows on the toolbar
 	const icon = nativeImage.createFromPath('./images/tempimage.png');
 	tray = new Tray(icon);
